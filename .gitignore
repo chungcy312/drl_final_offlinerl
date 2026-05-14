@@ -1,0 +1,7 @@
+assignment2-3-chungcy312/
+generate_dataset/*.exe
+generate_dataset/*.fbin
+generate_dataset/checkpoints/
+generate_dataset/data/
+generate_dataset/data_*/
+generate_dataset/smoke_checkpoints/
