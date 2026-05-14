@@ -36,8 +36,6 @@ Equivalent direct command:
   --stage-episodes 1000 `
   --score-bin-width 500 `
   --max-per-stage-bin 25 `
-  --epsilon-start 0.20 `
-  --epsilon-final 0.02 `
   --log-every 200 `
   --save-every 1000
 ```
@@ -74,8 +72,6 @@ Dataset collection parameters:
 - `--stage-episodes N`: number of episodes per training stage.
 - `--score-bin-width N`: score bucket width. Recommended: `500`.
 - `--max-per-stage-bin N`: max saved trajectories per `(stage, score_bin)`.
-- `--epsilon-start X`: random-action probability at the beginning.
-- `--epsilon-final X`: random-action probability at the end.
 - `--save-rejected-meta`: also write metadata rows for trajectories skipped by the bin cap.
 
 Recommended first setting:
@@ -84,8 +80,6 @@ Recommended first setting:
 score_bin_width = 500
 stage_episodes = 1000
 max_per_stage_bin = 25
-epsilon_start = 0.20
-epsilon_final = 0.02
 ```
 
 If the dataset is too large, reduce `max_per_stage_bin` to `10`. If many score bins are empty, increase `score_bin_width` to `1000`.

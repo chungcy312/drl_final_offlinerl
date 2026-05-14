@@ -61,8 +61,6 @@ struct Args {
     int    score_bin_width       = 500;
     int    max_per_stage_bin     = 25;
     bool   save_rejected_meta    = false;
-    double epsilon_start         = 0.20;
-    double epsilon_final         = 0.02;
 };
 
 static bool has_suffix(const std::string& s, const std::string& suffix) {
@@ -800,8 +798,6 @@ Args parse_args(int argc, char** argv) {
         else if (k=="--score-bin-width")       a.score_bin_width       = std::stoi(need(k));
         else if (k=="--max-per-stage-bin")     a.max_per_stage_bin     = std::stoi(need(k));
         else if (k=="--save-rejected-meta")    a.save_rejected_meta    = true;
-        else if (k=="--epsilon-start")         a.epsilon_start         = std::stod(need(k));
-        else if (k=="--epsilon-final")         a.epsilon_final         = std::stod(need(k));
         else { std::cerr<<"Unknown argument: "<<k<<"\n"; std::exit(2); }
     }
     return a;
@@ -830,8 +826,6 @@ int main(int argc, char** argv) {
               << " stage_episodes=" << args.stage_episodes
               << " score_bin_width=" << args.score_bin_width
               << " max_per_stage_bin=" << args.max_per_stage_bin
-              << " epsilon_start=" << args.epsilon_start
-              << " epsilon_final=" << args.epsilon_final
               << "\n";
 
     if (args.save_every>0) fs::create_directories(args.checkpoint_dir);
@@ -873,11 +867,6 @@ int main(int argc, char** argv) {
 
         int ep_score=0, step_count=0;
         double cur_alpha = compute_alpha(ep, args.episodes, args);
-        double frac = args.episodes > 1
-            ? static_cast<double>(ep - 1) / static_cast<double>(args.episodes - 1)
-            : 1.0;
-        double epsilon = args.epsilon_start + (args.epsilon_final - args.epsilon_start) * frac;
-        epsilon = std::clamp(epsilon, 0.0, 1.0);
         EpisodeRecord record;
         record.episode = ep;
         record.stage = args.stage_episodes > 0 ? (ep - 1) / args.stage_episodes : 0;
@@ -890,16 +879,7 @@ int main(int argc, char** argv) {
             Codes state_codes = board_to_codes(board);
             MoveResult after; Codes after_codes;
             uint32_t step_seed = static_cast<uint32_t>(args.seed + ep*100000LL + step_count*9973 + 17);
-            int action = 0;
-            std::uniform_real_distribution<double> eps_dist(0.0, 1.0);
-            if (eps_dist(ep_rng) < epsilon) {
-                std::uniform_int_distribution<int> pick(0, static_cast<int>(legal.size()) - 1);
-                action = legal[pick(ep_rng)];
-                after = apply_action(board, action);
-                after_codes = board_to_codes(after.board);
-            } else {
-                action = select_action(board, vf, args, step_seed, &after, &after_codes);
-            }
+            int action = select_action(board, vf, args, step_seed, &after, &after_codes);
             if (!after.moved) break;
 
             board = after.board;
@@ -945,7 +925,6 @@ int main(int argc, char** argv) {
                       << " | std=" << std::setw(8) << std::setprecision(0) << std_last(episode_scores, args.log_every)
                       << " | last=" << std::setw(8) << ep_score
                       << " | steps=" << std::setw(5) << step_count
-                      << " | eps=" << std::setprecision(3) << epsilon
                       << " | α=" << std::setprecision(5) << cur_alpha
                       << "\n";
         }

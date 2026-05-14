@@ -11,7 +11,5 @@ $ErrorActionPreference = "Stop"
   --stage-episodes 1000 `
   --score-bin-width 500 `
   --max-per-stage-bin 25 `
-  --epsilon-start 0.20 `
-  --epsilon-final 0.02 `
   --log-every 200 `
   --save-every 1000
