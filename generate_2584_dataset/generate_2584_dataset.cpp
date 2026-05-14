@@ -1,10 +1,10 @@
 /**
- * train_afterstate_ntuple.cpp  —  Afterstate TD / OTD / OTD+TC trainer for 2584
+ * train_afterstate_ntuple.cpp  ?? Afterstate TD / OTD / OTD+TC trainer for 2584
  *
  * Key improvements over original:
  *  1. Pure TD target: r_{t+1} + V(s'_{t+1})  (γ = 1, no reward_scale / empty_w / adj_w)
  *  2. Optimistic initialisation (v_init):  weights default to v_init / num_tuples
- *  3. Alpha decay schedule: α → α*0.1 at 50 %, α*0.01 at 75 %
+ *  3. Alpha decay schedule: α ??α*0.1 at 50 %, α*0.01 at 75 %
  *  4. Temporal Coherence (TC) learning  (--use-tc flag)
  *  5. New binary format NTUPLE2 that stores the default weight value
  *     (backward-compatible loader: also reads the old NTUPLE1 format)
@@ -55,7 +55,7 @@ struct Args {
     int    mcts_rollout_depth    = 2;
     int    mcts_trigger_empty_le = 5;
     // dataset collection
-    std::string dataset_dir      = "generate_dataset/data";
+    std::string dataset_dir      = "generate_2584_dataset/data";
     int    collect_every         = 1;
     int    stage_episodes        = 1000;
     int    score_bin_width       = 500;
@@ -275,15 +275,15 @@ const std::vector<Codes> SYM_PERMS = make_sym_perms();
 // ---------------------------------------------------------------------------
 class NTupleValue {
 public:
-    // --------------- Matsuzaki's 8×6-tuple patterns -------------------------
+    // --------------- Matsuzaki's 8?6-tuple patterns -------------------------
     // These are the best-known patterns for 2048/2584 (Figure 5 in paper).
-    // Each index refers to a cell in the flattened 4×4 board:
+    // Each index refers to a cell in the flattened 4?4 board:
     //   0  1  2  3
     //   4  5  6  7
     //   8  9 10 11
     //  12 13 14 15
     static constexpr std::array<std::array<int,TUPLE_SIZE>, 8> TUPLES = {{
-        {0, 1, 2, 4, 5, 6},    // 2×3 top-left block
+        {0, 1, 2, 4, 5, 6},    // 2?3 top-left block
         {1, 2, 5, 6, 9, 13},   // diagonal band
         {0, 1, 2, 3, 4, 5},    // top two rows (left half)
         {0, 1, 5, 6, 7, 10},   // L-shape variant
@@ -756,7 +756,7 @@ private:
 };
 
 // ---------------------------------------------------------------------------
-// Alpha schedule:  0..50% → alpha,  50..75% → alpha_mid,  75..100% → alpha_final
+// Alpha schedule:  0..50% ??alpha,  50..75% ??alpha_mid,  75..100% ??alpha_final
 // ---------------------------------------------------------------------------
 double compute_alpha(int ep, int total, const Args& a) {
     double frac = static_cast<double>(ep) / static_cast<double>(total);
@@ -886,7 +886,7 @@ int main(int argc, char** argv) {
             auto legal = legal_actions(board);
             if (legal.empty()) break;
 
-            // Select action → get afterstate
+            // Select action ??get afterstate
             Codes state_codes = board_to_codes(board);
             MoveResult after; Codes after_codes;
             uint32_t step_seed = static_cast<uint32_t>(args.seed + ep*100000LL + step_count*9973 + 17);
@@ -971,3 +971,4 @@ int main(int argc, char** argv) {
     std::cout << "Final weights saved to: " << args.save_path << "\n";
     return 0;
 }
+

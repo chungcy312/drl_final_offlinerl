@@ -5,13 +5,13 @@ This folder trains a 2584 afterstate n-tuple agent from scratch and saves trajec
 ## Build
 
 ```powershell
-.\generate_dataset\build.ps1
+.\generate_2584_dataset\build.ps1
 ```
 
 This creates:
 
 ```text
-generate_dataset/generate_2584_dataset.exe
+generate_2584_dataset/generate_2584_dataset.exe
 ```
 
 ## Run Training And Collect Dataset
@@ -19,19 +19,19 @@ generate_dataset/generate_2584_dataset.exe
 Recommended first run:
 
 ```powershell
-.\generate_dataset\run_example.ps1
+.\generate_2584_dataset\run_example.ps1
 ```
 
 Equivalent direct command:
 
 ```powershell
-.\generate_dataset\generate_2584_dataset.exe `
+.\generate_2584_dataset\generate_2584_dataset.exe `
   --episodes 50000 `
   --no-train-mcts `
   --seed 0 `
-  --save-path generate_dataset\n_tuple_weights_dataset.fbin `
-  --checkpoint-dir generate_dataset\checkpoints `
-  --dataset-dir generate_dataset\data `
+  --save-path generate_2584_dataset\n_tuple_weights_dataset.fbin `
+  --checkpoint-dir generate_2584_dataset\checkpoints `
+  --dataset-dir generate_2584_dataset\data `
   --collect-every 1 `
   --stage-episodes 1000 `
   --score-bin-width 500 `
@@ -45,9 +45,9 @@ Equivalent direct command:
 Dataset output:
 
 ```text
-generate_dataset/data/metadata.csv
-generate_dataset/data/schema.txt
-generate_dataset/data/trajectories/*.bin
+generate_2584_dataset/data/metadata.csv
+generate_2584_dataset/data/schema.txt
+generate_2584_dataset/data/trajectories/*.bin
 ```
 
 Use `metadata.csv` as the trajectory index. The `score` column is the trajectory return `R(tau)`.
@@ -101,13 +101,13 @@ Checkpoint files are controlled by:
 During training, latest checkpoints are saved to:
 
 ```text
-generate_dataset/checkpoints/n_tuple_weights_latest.fbin
+generate_2584_dataset/checkpoints/n_tuple_weights_latest.fbin
 ```
 
 At the end, final weights are saved to:
 
 ```text
-generate_dataset/n_tuple_weights_dataset.fbin
+generate_2584_dataset/n_tuple_weights_dataset.fbin
 ```
 
 To continue from existing weights, run with:
@@ -163,19 +163,19 @@ Actions:
 Use the helper:
 
 ```python
-from generate_dataset.read_dataset import iter_trajectories, load_trajectory
+from generate_2584_dataset.read_dataset import iter_trajectories, load_trajectory
 
-for traj in iter_trajectories("generate_dataset/data"):
+for traj in iter_trajectories("generate_2584_dataset/data"):
     print(traj.score, traj.states.shape, traj.actions.shape)
 
-one = load_trajectory("generate_dataset/data/trajectories/traj_0000000_ep0000001_score000889.bin")
+one = load_trajectory("generate_2584_dataset/data/trajectories/traj_0000000_ep0000001_score000889.bin")
 print(one.states, one.actions, one.rewards, one.next_states, one.dones)
 ```
 
 Summarize a dataset:
 
 ```powershell
-python generate_dataset\read_dataset.py generate_dataset\data
+python generate_2584_dataset\read_dataset.py generate_2584_dataset\data
 ```
 
 ## Use Dataset In C++
@@ -206,3 +206,4 @@ int32_t max_tile;
 ```
 
 Make sure to open trajectory files with `std::ios::binary`.
+
