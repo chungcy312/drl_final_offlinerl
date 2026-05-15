@@ -5,4 +5,8 @@ generate_2584_dataset/checkpoints/
 generate_2584_dataset/data/
 generate_2584_dataset/data_*/
 generate_2584_dataset/smoke_checkpoints/
+train_2584_offline/*.exe
+train_2584_offline/*.fbin
+train_2584_offline/checkpoints/
+train_2584_offline/smoke_checkpoints/
 

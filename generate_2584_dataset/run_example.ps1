@@ -12,4 +12,5 @@ $ErrorActionPreference = "Stop"
   --score-bin-width 500 `
   --max-per-stage-bin 25 `
   --log-every 200 `
-  --save-every 1000
+  --save-every 1000 `
+  --continue
