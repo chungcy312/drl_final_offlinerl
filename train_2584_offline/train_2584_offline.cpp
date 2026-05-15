@@ -549,10 +549,20 @@ Trajectory load_trajectory(const TrajectoryIndex& meta) {
 std::vector<TrajectoryIndex> scan_dataset(const std::string& dataset_dir) {
     fs::path traj_dir = fs::path(dataset_dir) / "trajectories";
     if (!fs::exists(traj_dir)) throw std::runtime_error("missing trajectories dir: " + traj_dir.string());
-    std::vector<TrajectoryIndex> out;
+    std::vector<fs::path> paths;
     for (const auto& ent : fs::directory_iterator(traj_dir)) {
         if (ent.is_regular_file() && ent.path().extension() == ".bin")
-            out.push_back(read_header(ent.path()));
+            paths.push_back(ent.path());
+    }
+    std::sort(paths.begin(), paths.end());
+
+    std::vector<TrajectoryIndex> out;
+    out.reserve(paths.size());
+    ProgressBar bar(static_cast<int>(paths.size()));
+    for (size_t i = 0; i < paths.size(); ++i) {
+        out.push_back(read_header(paths[i]));
+        if ((i + 1) % 256 == 0 || i + 1 == paths.size())
+            bar.update(static_cast<int>(i + 1));
     }
     std::sort(out.begin(), out.end(), [](const auto& a, const auto& b) {
         if (a.score != b.score) return a.score < b.score;
